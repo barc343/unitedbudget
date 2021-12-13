@@ -1,0 +1,15 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+media
+
+# db #
+db/
+
+# Backup files #
+*.bak
+
+# customs
+.idea/
