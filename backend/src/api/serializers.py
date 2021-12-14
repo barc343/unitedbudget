@@ -2,27 +2,53 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Expense, ExpenseCategory, BudgetCategory, Budget, IncomeCategory, Income
 
-class BudgetCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BudgetCategory
-        fields = '__all__'
-
-class BudgetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Budget
-        fields = '__all__'
-
 
 class ExpenseCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpenseCategory
         fields = '__all__'
 
+
 class ExpenseSerializer(serializers.ModelSerializer):
     category = ExpenseCategorySerializer()
 
     class Meta:
         model = Expense
+        fields = '__all__'
+
+
+class IncomeCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IncomeCategory
+        fields = '__all__'
+
+
+class IncomeSerializer(serializers.ModelSerializer):
+    category = IncomeCategorySerializer()
+
+    class Meta:
+        model = Income
+        fields = '__all__'
+
+
+class BudgetCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BudgetCategory
+        fields = '__all__'
+
+
+class SharedBudgetCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BudgetCategory
+        fields = '__all__'
+
+
+class BudgetSerializer(serializers.ModelSerializer):
+    income = IncomeSerializer(read_only=True, many=True)
+    expenses = ExpenseSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Budget
         fields = '__all__'
 
 
