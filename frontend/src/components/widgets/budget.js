@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {apiHandler} from "../../modules/requests";
-import {Tab, Row, Col, ListGroup, Spinner, Button, Card} from "react-bootstrap";
+import {Tab, Row, Col, ListGroup, Spinner, Button, Card, Badge} from "react-bootstrap";
 import {PencilSquare, XCircle} from 'react-bootstrap-icons';
 import {
     BudgetCategoryModal,
@@ -9,6 +9,57 @@ import {
     CreateIncomeModal,
     EditBudgetCategoryModal, EditExpenseCategoryModal, EditIncomeCategoryModal
 } from "./modals";
+
+
+const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumResult}) => {
+    console.log(incomesSum)
+    console.log(expensesSum)
+    console.log(incomesExpensesSumResult)
+    if (incomesSum && expensesSum) {
+        return (
+            <div>
+                <Badge className={'sum-badge'} pill bg="success">
+                    {incomesSum}
+                </Badge>
+                {' '}-{' '}
+                <Badge className={'sum-badge'} pill bg="danger">
+                    {expensesSum}
+                </Badge>
+                {' '}={' '}
+                <Badge className={'sum-badge'} pill bg="info">
+                    {incomesExpensesSumResult}
+                </Badge>
+            </div>
+        )
+    }
+    if (!incomesSum && expensesSum) {
+        return (
+            <div>
+                <Badge className={'sum-badge'} pill bg="danger">
+                    {expensesSum}
+                </Badge>
+                {' '}={' '}
+                <Badge className={'sum-badge'} pill bg="info">
+                    {incomesExpensesSumResult}
+                </Badge>
+            </div>
+        )
+    }
+    if (!expensesSum && incomesSum) {
+        return (
+            <div>
+                <Badge className={'sum-badge'} pill bg="success">
+                    {incomesSum}
+                </Badge>
+                {' '}={' '}
+                <Badge className={'sum-badge'} pill bg="info">
+                    {incomesExpensesSumResult}
+                </Badge>
+            </div>
+        )
+    }
+    return null
+}
 
 
 export const BudgetCategories = ({setBudget, setSharedStatus}) => {
@@ -44,6 +95,7 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
     const refreshData = () => {
         apiHandler.getData('budget_categories').then(resp => {
             setBudgetCategories(resp)
+            getBudgetList(selectedBudgetCategory)
         })
     }
 
@@ -186,6 +238,9 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
 export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
     const [expenses, setExpenses] = useState(null)
     const [incomes, setIncomes] = useState(null)
+    const [incomesSum, setIncomesSum] = useState(0)
+    const [expensesSum, setExpensesSum] = useState(0)
+    const [incomesExpensesSumResult, setIncomesExpensesSumResult] = useState(0)
     const [selectedIncomeExpenseCategory, setSelectedIECategory] = useState(null)
 
     const [createIncomeModalShow, setCreateIncomeModalShow] = useState(false)
@@ -236,6 +291,17 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
                 }, Object.create(null));
                 setIncomes(result);
             }
+
+            const sumIncomesExpenses = () => {
+                let incomesSumResult = budget.income_detail.length > 0 && budget.income_detail.map(item => parseFloat(item.amount)).reduce((prev, next) => prev + next).toFixed(2)
+                setIncomesSum(incomesSumResult)
+                let expensesSumResult = budget.expenses_detail.length > 0 && budget.expenses_detail.map(item => parseFloat(item.amount)).reduce((prev, next) => prev + next).toFixed(2)
+                setExpensesSum(expensesSumResult)
+                let sumResult = incomesSumResult - expensesSumResult
+                setIncomesExpensesSumResult(sumResult.toFixed(2))
+            }
+
+            sumIncomesExpenses()
         }
     }, [budget])
 
@@ -261,11 +327,18 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
                 <Card.Body>
                     <Card.Title>
                         <Row>
-                            <Col>
-                                {budget.name}
+                            <Col md={8}>
+                                <Row>
+                                    <Col md={4} className={'align-self-center'}>
+                                        {budget.name}
+                                    </Col>
+                                    <Col md={8}>
+                                        <IncomeExpenseSumComponent expensesSum={expensesSum} incomesSum={incomesSum} incomesExpensesSumResult={incomesExpensesSumResult}/>
+                                    </Col>
+                                </Row>
                             </Col>
                             {!sharedStatus &&
-                            <Col className={'text-end'}>
+                            <Col md={4} className={'text-end'}>
                                 <Button onClick={deleteBudget} size={'sm'} variant={"danger"}><XCircle/></Button>
                             </Col>
                             }
