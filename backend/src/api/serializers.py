@@ -35,6 +35,20 @@ class BudgetCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = BudgetCategory
         fields = '__all__'
+        extra_kwargs = {
+            'owner': {'read_only': True}
+        }
+
+    def create(self, validated_data):
+        budget_category = BudgetCategory(
+            name=validated_data['name'],
+            owner=self.context['request'].user,
+            description=validated_data['description'],
+        )
+        print(validated_data['shared_users'])
+        budget_category.save()
+        budget_category.shared_users.set(validated_data['shared_users'])
+        return budget_category
 
 
 class SharedBudgetCategorySerializer(serializers.ModelSerializer):
@@ -52,10 +66,10 @@ class BudgetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CreateUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'password']
+        fields = ['id', 'email', 'username', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):

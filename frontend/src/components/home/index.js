@@ -5,20 +5,21 @@ import {useState} from "react";
 
 export const HomeComponent = () => {
     const [budget, setBudget] = useState(null)
+    const [sharedStatus, setSharedStatus] = useState()
     return (
         <div>
             <Container>
                 <Row>
                     <Col className={'p-3'}>
-                        <BudgetCategories setBudget={setBudget}/>
+                        <BudgetCategories setBudget={setBudget} setSharedStatus={setSharedStatus}/>
                     </Col>
                     <Col className={'p-3'}>
-                        <ShareBudgetCategories setBudget={setBudget}/>
+                        <ShareBudgetCategories setBudget={setBudget} setSharedStatus={setSharedStatus}/>
                     </Col>
                 </Row>
                 <Row>
                     <Col className={'p-3'}>
-                        <BudgetSingleComponent budget={budget}/>
+                        <BudgetSingleComponent budget={budget} sharedStatus={sharedStatus}/>
                     </Col>
                 </Row>
             </Container>
