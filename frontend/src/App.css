@@ -4,3 +4,8 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.clickable-icon:hover {
+  cursor: pointer;
+  color: green;
+}

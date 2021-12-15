@@ -17,12 +17,28 @@ class ExpensesViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
 
 
+class ExpenseCategoriesViewSet(viewsets.ModelViewSet):
+    """
+    Budget ViewSet.
+    """
+    queryset = ExpenseCategory.objects.all()
+    serializer_class = ExpenseCategorySerializer
+
+
 class IncomesViewSet(viewsets.ModelViewSet):
     """
     Budget ViewSet.
     """
     queryset = Income.objects.all()
     serializer_class = IncomeSerializer
+
+
+class IncomeCategoriesViewSet(viewsets.ModelViewSet):
+    """
+    Budget ViewSet.
+    """
+    queryset = IncomeCategory.objects.all()
+    serializer_class = IncomeCategorySerializer
 
 
 class BudgetsViewSet(viewsets.ModelViewSet):
