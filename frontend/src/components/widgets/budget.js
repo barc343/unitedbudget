@@ -1,8 +1,65 @@
 import {useEffect, useState} from "react";
 import {apiHandler} from "../../modules/requests";
-import {Tab, Row, Col, ListGroup, Spinner, Button, Card} from "react-bootstrap";
+import {Tab, Row, Col, ListGroup, Spinner, Button, Card, Badge} from "react-bootstrap";
 import {PencilSquare, XCircle} from 'react-bootstrap-icons';
-import {BudgetCategoryModal, CreateBudgetCategoryModal, CreateBudgetModal, EditBudgetCategoryModal} from "./modals";
+import {
+    BudgetCategoryModal,
+    CreateBudgetCategoryModal,
+    CreateBudgetModal, CreateExpenseCategoryModal, CreateExpenseModal, CreateIncomeCategoryModal,
+    CreateIncomeModal,
+    EditBudgetCategoryModal, EditExpenseCategoryModal, EditIncomeCategoryModal
+} from "./modals";
+
+
+const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumResult}) => {
+    console.log(incomesSum)
+    console.log(expensesSum)
+    console.log(incomesExpensesSumResult)
+    if (incomesSum && expensesSum) {
+        return (
+            <div>
+                <Badge className={'sum-badge'} pill bg="success">
+                    {incomesSum}
+                </Badge>
+                {' '}-{' '}
+                <Badge className={'sum-badge'} pill bg="danger">
+                    {expensesSum}
+                </Badge>
+                {' '}={' '}
+                <Badge className={'sum-badge'} pill bg="info">
+                    {incomesExpensesSumResult}
+                </Badge>
+            </div>
+        )
+    }
+    if (!incomesSum && expensesSum) {
+        return (
+            <div>
+                <Badge className={'sum-badge'} pill bg="danger">
+                    {expensesSum}
+                </Badge>
+                {' '}={' '}
+                <Badge className={'sum-badge'} pill bg="info">
+                    {incomesExpensesSumResult}
+                </Badge>
+            </div>
+        )
+    }
+    if (!expensesSum && incomesSum) {
+        return (
+            <div>
+                <Badge className={'sum-badge'} pill bg="success">
+                    {incomesSum}
+                </Badge>
+                {' '}={' '}
+                <Badge className={'sum-badge'} pill bg="info">
+                    {incomesExpensesSumResult}
+                </Badge>
+            </div>
+        )
+    }
+    return null
+}
 
 
 export const BudgetCategories = ({setBudget, setSharedStatus}) => {
@@ -32,6 +89,13 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
         apiHandler.getData(`budget/?category=${category.id}`).then(resp => {
             setBudgets(resp)
             setSelectedBudgetCategory(category)
+        })
+    }
+
+    const refreshData = () => {
+        apiHandler.getData('budget_categories').then(resp => {
+            setBudgetCategories(resp)
+            getBudgetList(selectedBudgetCategory)
         })
     }
 
@@ -92,9 +156,9 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                     </Tab.Container>
                 </Card.Text>
             </Card.Body>
-            <EditBudgetCategoryModal budgetCategory={selectedBudgetCategory} show={budgetCategoryModalShow} handleClose={handleCloseBudgetCategoryModal}/>
-            <CreateBudgetCategoryModal handleClose={handleCloseCreateBudgetCategoryModal} show={createBudgetCategoryModalShow}/>
-            <CreateBudgetModal budgetCategory={selectedBudgetCategory} show={createBudgetModalShow} handleClose={handleCloseCreateBudgetModal}/>
+            <EditBudgetCategoryModal refreshData={refreshData} budgetCategory={selectedBudgetCategory} show={budgetCategoryModalShow} handleClose={handleCloseBudgetCategoryModal}/>
+            <CreateBudgetCategoryModal refreshData={refreshData} handleClose={handleCloseCreateBudgetCategoryModal} show={createBudgetCategoryModalShow}/>
+            <CreateBudgetModal refreshData={refreshData} budgetCategory={selectedBudgetCategory} show={createBudgetModalShow} handleClose={handleCloseCreateBudgetModal}/>
         </Card>
     )
 }
@@ -171,30 +235,81 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
     )
 }
 
-export const BudgetSingleComponent = ({budget, sharedStatus}) => {
+export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
     const [expenses, setExpenses] = useState(null)
     const [incomes, setIncomes] = useState(null)
+    const [incomesSum, setIncomesSum] = useState(0)
+    const [expensesSum, setExpensesSum] = useState(0)
+    const [incomesExpensesSumResult, setIncomesExpensesSumResult] = useState(0)
+    const [selectedIncomeExpenseCategory, setSelectedIECategory] = useState(null)
+
+    const [createIncomeModalShow, setCreateIncomeModalShow] = useState(false)
+    const handleCloseCreateIncomeModal = () => setCreateIncomeModalShow(false)
+    const handleOpenCreateIncomeModal = () => setCreateIncomeModalShow(true)
+
+    const [createIncomeCategoryModalShow, setCreateIncomeCategoryModalShow] = useState(false)
+    const handleCloseCreateIncomeCategoryModal = () => setCreateIncomeCategoryModalShow(false)
+    const handleOpenCreateIncomeCategoryModal = () => setCreateIncomeCategoryModalShow(true)
+
+    const [createExpenseModalShow, setCreateExpenseModalShow] = useState(false)
+    const handleCloseCreateExpenseModal = () => setCreateExpenseModalShow(false)
+    const handleOpenCreateExpenseModal = () => setCreateExpenseModalShow(true)
+
+    const [createExpenseCategoryModalShow, setCreateExpenseCategoryModalShow] = useState(false)
+    const handleCloseCreateExpenseCategoryModal = () => setCreateExpenseCategoryModalShow(false)
+    const handleOpenCreateExpenseCategoryModal = () => setCreateExpenseCategoryModalShow(true)
+
+    const [editExpenseCategoryModalShow, setEditExpenseCategoryModalShow] = useState(false)
+    const handleCloseEditExpenseCategoryModal = () => setEditExpenseCategoryModalShow(false)
+    const handleOpenEditExpenseCategoryModal = (category) => {
+        setSelectedIECategory(category)
+        setEditExpenseCategoryModalShow(true)
+    }
+
+    const [editIncomeCategoryModalShow, setEditIncomeCategoryModalShow] = useState(false)
+    const handleCloseEditIncomeCategoryModal = () => setEditIncomeCategoryModalShow(false)
+    const handleOpenEditIncomeCategoryModal = (category) => {
+        setSelectedIECategory(category)
+        setEditIncomeCategoryModalShow(true)
+    }
 
     useEffect(() => {
         if (budget) {
             if (budget.expenses) {
-                let result = budget.expenses.reduce(function (r, a) {
-                    r[a.category.id] = r[a.category.id] || [];
-                    r[a.category.id].push(a);
+                let result = budget.expenses_detail.reduce(function (r, a) {
+                    r[a.category_detail.id] = r[a.category_detail.id] || [];
+                    r[a.category_detail.id].push(a);
                     return r;
                 }, Object.create(null));
                 setExpenses(result);
             }
             if (budget.income) {
-                let result = budget.income.reduce(function (r, a) {
-                    r[a.category.id] = r[a.category.id] || [];
-                    r[a.category.id].push(a);
+                let result = budget.income_detail.reduce(function (r, a) {
+                    r[a.category_detail.id] = r[a.category_detail.id] || [];
+                    r[a.category_detail.id].push(a);
                     return r;
                 }, Object.create(null));
                 setIncomes(result);
             }
+
+            const sumIncomesExpenses = () => {
+                let incomesSumResult = budget.income_detail.length > 0 && budget.income_detail.map(item => parseFloat(item.amount)).reduce((prev, next) => prev + next).toFixed(2)
+                setIncomesSum(incomesSumResult)
+                let expensesSumResult = budget.expenses_detail.length > 0 && budget.expenses_detail.map(item => parseFloat(item.amount)).reduce((prev, next) => prev + next).toFixed(2)
+                setExpensesSum(expensesSumResult)
+                let sumResult = incomesSumResult - expensesSumResult
+                setIncomesExpensesSumResult(sumResult.toFixed(2))
+            }
+
+            sumIncomesExpenses()
         }
     }, [budget])
+
+    const refreshData = () => {
+        apiHandler.getData(`budget/${budget.id}`).then(resp => {
+            setBudget(resp)
+        })
+    }
 
     const deleteBudget = () => {
         if (window.confirm('Are you sure you want to delete this budget?')) {
@@ -212,11 +327,18 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                 <Card.Body>
                     <Card.Title>
                         <Row>
-                            <Col>
-                                {budget.name}
+                            <Col md={8}>
+                                <Row>
+                                    <Col md={4} className={'align-self-center'}>
+                                        {budget.name}
+                                    </Col>
+                                    <Col md={8}>
+                                        <IncomeExpenseSumComponent expensesSum={expensesSum} incomesSum={incomesSum} incomesExpensesSumResult={incomesExpensesSumResult}/>
+                                    </Col>
+                                </Row>
                             </Col>
                             {!sharedStatus &&
-                            <Col className={'text-end'}>
+                            <Col md={4} className={'text-end'}>
                                 <Button onClick={deleteBudget} size={'sm'} variant={"danger"}><XCircle/></Button>
                             </Col>
                             }
@@ -232,7 +354,8 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                                     </Col>
                                     {!sharedStatus &&
                                     <Col className={'text-end'}>
-                                        <Button size={'sm'}>Add income</Button>
+                                        <Button onClick={handleOpenCreateIncomeCategoryModal} size={'sm'}>Add income category</Button>{' '}
+                                        <Button onClick={handleOpenCreateIncomeModal} size={'sm'}>Add income</Button>
                                     </Col>
                                     }
                                 </Row>
@@ -240,7 +363,7 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                                     incomes && Object.values(incomes).map(itemArr => {
                                         return (
                                             <div>
-                                                <p className={'h6'}>{itemArr[0].category.name}</p>
+                                                <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus && <PencilSquare className={'clickable-icon'} onClick={() => handleOpenEditIncomeCategoryModal(itemArr[0].category_detail)}/>}</p>
                                                 {
                                                     itemArr.map(item => {
                                                         return (
@@ -249,7 +372,7 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                                                                     <Col>
                                                                         {item.name}
                                                                     </Col>
-                                                                    <Col>
+                                                                    <Col className={'text-end'}>
                                                                         {item.amount} $
                                                                     </Col>
                                                                 </Row>
@@ -269,7 +392,8 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                                     </Col>
                                     {!sharedStatus &&
                                     <Col className={'text-end'}>
-                                        <Button size={'sm'}>Add expense</Button>
+                                        <Button onClick={handleOpenCreateExpenseCategoryModal} size={'sm'}>Add expense category</Button>{' '}
+                                        <Button onClick={handleOpenCreateExpenseModal} size={'sm'}>Add expense</Button>
                                     </Col>
                                     }
                                 </Row>
@@ -277,7 +401,7 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                                     expenses && Object.values(expenses).map(itemArr => {
                                         return (
                                             <div>
-                                                <p className={'h6'}>{itemArr[0].category.name}</p>
+                                                <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus && <PencilSquare className={'clickable-icon'} onClick={() => handleOpenEditExpenseCategoryModal(itemArr[0].category_detail)}/>}</p>
                                                 {
                                                     itemArr.map(item => {
                                                         return (
@@ -286,7 +410,7 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                                                                     <Col>
                                                                         {item.name}
                                                                     </Col>
-                                                                    <Col>
+                                                                    <Col className={'text-end'}>
                                                                         {item.amount} $
                                                                     </Col>
                                                                 </Row>
@@ -302,6 +426,12 @@ export const BudgetSingleComponent = ({budget, sharedStatus}) => {
                         </Row>
                     </Card.Text>
                 </Card.Body>
+                <CreateIncomeModal refreshData={refreshData} budget={budget} show={createIncomeModalShow} handleClose={handleCloseCreateIncomeModal}/>
+                <CreateExpenseModal refreshData={refreshData} budget={budget} show={createExpenseModalShow} handleClose={handleCloseCreateExpenseModal}/>
+                <CreateExpenseCategoryModal refreshData={refreshData} show={createExpenseCategoryModalShow} handleClose={handleCloseCreateExpenseCategoryModal}/>
+                <CreateIncomeCategoryModal refreshData={refreshData} show={createIncomeCategoryModalShow} handleClose={handleCloseCreateIncomeCategoryModal}/>
+                <EditExpenseCategoryModal refreshData={refreshData} show={editExpenseCategoryModalShow} handleClose={handleCloseEditExpenseCategoryModal} category={selectedIncomeExpenseCategory}/>
+                <EditIncomeCategoryModal refreshData={refreshData} show={editIncomeCategoryModalShow} handleClose={handleCloseEditIncomeCategoryModal} category={selectedIncomeExpenseCategory}/>
             </Card>
         )
     } else return null

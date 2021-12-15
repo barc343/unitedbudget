@@ -4,3 +4,12 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.clickable-icon:hover {
+  cursor: pointer;
+  color: green;
+}
+
+.sum-badge{
+  font-size: 20px;
+}

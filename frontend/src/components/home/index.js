@@ -19,7 +19,7 @@ export const HomeComponent = () => {
                 </Row>
                 <Row>
                     <Col className={'p-3'}>
-                        <BudgetSingleComponent budget={budget} sharedStatus={sharedStatus}/>
+                        <BudgetSingleComponent budget={budget} setBudget={setBudget} sharedStatus={sharedStatus}/>
                     </Col>
                 </Row>
             </Container>

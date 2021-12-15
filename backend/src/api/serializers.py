@@ -10,7 +10,7 @@ class ExpenseCategorySerializer(serializers.ModelSerializer):
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
-    category = ExpenseCategorySerializer()
+    category_detail = ExpenseCategorySerializer(source='category', read_only=True)
 
     class Meta:
         model = Expense
@@ -24,11 +24,11 @@ class IncomeCategorySerializer(serializers.ModelSerializer):
 
 
 class IncomeSerializer(serializers.ModelSerializer):
-    category = IncomeCategorySerializer()
+    category_detail = IncomeCategorySerializer(source='category', read_only=True)
 
     class Meta:
         model = Income
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'category', 'category_detail', 'amount', 'date')
 
 
 class BudgetCategorySerializer(serializers.ModelSerializer):
@@ -58,8 +58,8 @@ class SharedBudgetCategorySerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    income = IncomeSerializer(read_only=True, many=True)
-    expenses = ExpenseSerializer(read_only=True, many=True)
+    income_detail = IncomeSerializer(source='income', read_only=True, many=True)
+    expenses_detail = ExpenseSerializer(source='expenses', read_only=True, many=True)
 
     class Meta:
         model = Budget
