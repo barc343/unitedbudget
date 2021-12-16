@@ -9,12 +9,12 @@ If you want run app, you must have installed Docker and Docker-compose
 Go to `/backend` folder and run `docker-compose build` - this command build the container and install required dependencies
 
 ##### After install:
-Go to `/backend` folder and run `docker-compose run -d` - this command run container with installed app
+Go to `/backend` folder and run `docker-compose up -d` - this command run container with installed app
 now backend is avaliable on url `localhost:8000`
 
 ##### Loading Fixtures to DB
 After runs a container you must go inside this container and make migrations
-type command `docker-compose exec -it unitedbudget_api bash`
+type command `docker exec -it unitedbudget_api bash`
 
 now you are in `/code` directory - run migrations by command `python manage.py migrate`
 after this step go to `/code/fixtures` and run script `./load_data.sh`
