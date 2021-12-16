@@ -1,5 +1,3 @@
-
-
 # unitedbudget
 App for multi user budget management
 
@@ -21,6 +19,16 @@ now you are in `/code` directory - run migrations by command `python manage.py m
 after this step go to `/code/fixtures` and run script `./load_data.sh`
 > if errors exist rerun script to no error situation
 after this step data will be in database
+
+> alternative noscript - how load fixtures to app (/code/fixtures):
+
+`python ../manage.py loaddata users.json`
+`python ../manage.py loaddata budget_category.json`
+`python ../manage.py loaddata expense_category.json`
+`python ../manage.py loaddata income_category.json`
+`python ../manage.py loaddata expense.json`
+`python ../manage.py loaddata income.json`
+`python ../manage.py loaddata budget.json`
 
 
 ### Frontend
