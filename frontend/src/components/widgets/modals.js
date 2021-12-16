@@ -14,7 +14,6 @@ export const EditBudgetCategoryModal = ({show, handleClose, budgetCategory, refr
         let data = getDataFromFormRef(form)
         data['shared_users'] = checkedUsers
         apiHandler.patchData(`budget_categories/${budgetCategory.id}/`, data).then(resp => {
-            console.log(resp)
             refreshData()
             handleClose()
         })
@@ -30,7 +29,6 @@ export const EditBudgetCategoryModal = ({show, handleClose, budgetCategory, refr
                 sharedUserArr.push(item.toString())
             }
             setCheckedUsers(sharedUserArr)
-            console.log(checkedUsers)
         }
     }, [budgetCategory])
 
@@ -76,7 +74,6 @@ export const CreateBudgetCategoryModal = ({show, handleClose, refreshData}) => {
         let data = getDataFromFormRef(form)
         data['shared_users'] = checkedUsers
         apiHandler.postData(`budget_categories/`, data).then(resp => {
-            console.log(resp)
             refreshData()
             handleClose()
         })
@@ -128,7 +125,6 @@ export const CreateBudgetModal = ({show, handleClose, budgetCategory, refreshDat
         let data = getDataFromFormRef(form)
         data['category'] = budgetCategory.id
         apiHandler.postData(`budget/`, data).then(resp => {
-            console.log(resp)
             refreshData()
             handleClose()
         })
@@ -171,8 +167,6 @@ export const CreateIncomeModal = ({show, handleClose, budget, refreshData}) => {
     const [incomeCategories, setIncomeCategories] = useState([])
     const [selectedCategory, setSelectedCategory] = useState(null)
 
-    console.log(budget)
-
     const handleSubmit = (e) => {
         e.preventDefault()
         let data = getDataFromFormRef(form)
@@ -182,7 +176,6 @@ export const CreateIncomeModal = ({show, handleClose, budget, refreshData}) => {
         let existingIncomes = budget.income
         apiHandler.postData(`income/`, data).then(resp => {
             existingIncomes.push(resp.id)
-            console.log(existingIncomes)
             let income_data = {'income': existingIncomes}
             if (resp.hasOwnProperty('id')) {
                 apiHandler.patchData(`budget/${budget.id}/`, income_data).then(resp2 => {
@@ -225,7 +218,7 @@ export const CreateIncomeModal = ({show, handleClose, budget, refreshData}) => {
                         <FloatingLabel controlId="floatingSelect" label="Select income category">
                             <Form.Select onChange={(e) => setSelectedCategory(e.target.value)}>
                                 <option value={null}>---</option>
-                                {incomeCategories.map(item => {
+                                {incomeCategories.length > 0 && incomeCategories.map(item => {
                                     return (
                                         <option value={item.id}>{item.name}</option>
                                     )
@@ -252,8 +245,6 @@ export const CreateExpenseModal = ({show, handleClose, budget, refreshData}) => 
     const [expenseCategories, setExpenseCategories] = useState([])
     const [selectedCategory, setSelectedCategory] = useState(null)
 
-    console.log(budget)
-
     const handleSubmit = (e) => {
         e.preventDefault()
         let data = getDataFromFormRef(form)
@@ -263,7 +254,6 @@ export const CreateExpenseModal = ({show, handleClose, budget, refreshData}) => 
         let existingExpenses = budget.expenses
         apiHandler.postData(`expense/`, data).then(resp => {
             existingExpenses.push(resp.id)
-            console.log(existingExpenses)
             let expense_data = {'expenses': existingExpenses}
             if (resp.hasOwnProperty('id')) {
                 apiHandler.patchData(`budget/${budget.id}/`, expense_data).then(resp2 => {
@@ -303,10 +293,15 @@ export const CreateExpenseModal = ({show, handleClose, budget, refreshData}) => 
                             <Form.Control name={'amount'} rows={4} type="text" placeholder="Change amount" />
                         </Form.Group>
 
+                        <Form.Group className="mb-3" controlId="desc">
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control name={'date'} rows={4} type="date" placeholder="Select date" />
+                        </Form.Group>
+
                         <FloatingLabel controlId="floatingSelect" label="Select income category">
                             <Form.Select onChange={(e) => setSelectedCategory(e.target.value)}>
                                 <option value={null}>---</option>
-                                {expenseCategories.map(item => {
+                                {expenseCategories.length > 0 && expenseCategories.map(item => {
                                     return (
                                         <option value={item.id}>{item.name}</option>
                                     )
@@ -336,7 +331,6 @@ export const CreateExpenseCategoryModal = ({show, handleClose, refreshData}) => 
         let data = getDataFromFormRef(form)
         apiHandler.postData(`expense_categories/`, data).then(resp => {
             refreshData()
-            console.log(resp)
         })
     }
 
@@ -378,7 +372,6 @@ export const CreateIncomeCategoryModal = ({show, handleClose, refreshData}) => {
         e.preventDefault()
         let data = getDataFromFormRef(form)
         apiHandler.postData(`income_categories/`, data).then(resp => {
-            console.log(resp)
             refreshData()
             handleClose()
         })
@@ -422,7 +415,6 @@ export const EditIncomeCategoryModal = ({show, handleClose, category, refreshDat
         e.preventDefault()
         let data = getDataFromFormRef(form)
         apiHandler.patchData(`income_categories/${category.id}/`, data).then(resp => {
-            console.log(resp)
             refreshData()
             handleClose()
         })
@@ -466,7 +458,6 @@ export const EditExpenseCategoryModal = ({show, handleClose, category, refreshDa
         e.preventDefault()
         let data = getDataFromFormRef(form)
         apiHandler.patchData(`expense_categories/${category.id}/`, data).then(resp => {
-            console.log(resp)
             handleClose()
             refreshData()
         })

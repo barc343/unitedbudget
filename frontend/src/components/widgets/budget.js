@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import {apiHandler} from "../../modules/requests";
-import {Tab, Row, Col, ListGroup, Spinner, Button, Card, Badge} from "react-bootstrap";
-import {PencilSquare, XCircle} from 'react-bootstrap-icons';
+import {Tab, Row, Col, ListGroup, Spinner, Button, Card, Badge, Form} from "react-bootstrap";
+import {PencilSquare, XCircle, XCircleFill} from 'react-bootstrap-icons';
+import DatePicker from "react-datepicker";
 import {
     BudgetCategoryModal,
     CreateBudgetCategoryModal,
@@ -9,25 +10,23 @@ import {
     CreateIncomeModal,
     EditBudgetCategoryModal, EditExpenseCategoryModal, EditIncomeCategoryModal
 } from "./modals";
+import {PaginationComponent} from "./pagination";
 
 
 const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumResult}) => {
-    console.log(incomesSum)
-    console.log(expensesSum)
-    console.log(incomesExpensesSumResult)
     if (incomesSum && expensesSum) {
         return (
             <div>
                 <Badge className={'sum-badge'} pill bg="success">
-                    {incomesSum}
+                    {incomesSum} $
                 </Badge>
                 {' '}-{' '}
                 <Badge className={'sum-badge'} pill bg="danger">
-                    {expensesSum}
+                    {expensesSum} $
                 </Badge>
                 {' '}={' '}
                 <Badge className={'sum-badge'} pill bg="info">
-                    {incomesExpensesSumResult}
+                    {incomesExpensesSumResult} $
                 </Badge>
             </div>
         )
@@ -36,11 +35,11 @@ const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumR
         return (
             <div>
                 <Badge className={'sum-badge'} pill bg="danger">
-                    {expensesSum}
+                    {expensesSum} $
                 </Badge>
                 {' '}={' '}
                 <Badge className={'sum-badge'} pill bg="info">
-                    {incomesExpensesSumResult}
+                    {incomesExpensesSumResult} $
                 </Badge>
             </div>
         )
@@ -49,11 +48,11 @@ const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumR
         return (
             <div>
                 <Badge className={'sum-badge'} pill bg="success">
-                    {incomesSum}
+                    {incomesSum} $
                 </Badge>
                 {' '}={' '}
                 <Badge className={'sum-badge'} pill bg="info">
-                    {incomesExpensesSumResult}
+                    {incomesExpensesSumResult} $
                 </Badge>
             </div>
         )
@@ -86,10 +85,12 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
     }, [])
 
     const getBudgetList = (category) => {
-        apiHandler.getData(`budget/?category=${category.id}`).then(resp => {
-            setBudgets(resp)
-            setSelectedBudgetCategory(category)
-        })
+        if (category && category.hasOwnProperty('id')) {
+            apiHandler.getData(`budget/?category=${category.id}`).then(resp => {
+                setBudgets(resp)
+                setSelectedBudgetCategory(category)
+            })
+        }
     }
 
     const refreshData = () => {
@@ -115,20 +116,23 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                     </Col>
                     <Col>
                         <Col className={'text-end'}>
-                            <Button onClick={handleOpenCreateBudgetCategoryModal} size={'sm'}>Add budget category</Button>
+                            <Button onClick={handleOpenCreateBudgetCategoryModal} size={'sm'}>Add budget
+                                category</Button>
                         </Col>
                     </Col>
                 </Row>
                 <Card.Text>
                     <Tab.Container id="list-group-tabs-example">
                         <Row>
-                            {budgetCategories.map(item => {
+                            {budgetCategories.length > 0 && budgetCategories.map(item => {
                                 return (
                                     <>
                                         <Col sm={4}>
                                             <ListGroup>
-                                                <ListGroup.Item className={'mb-2'} onClick={() => getBudgetList(item)} action href={`#${item.name}`}>
-                                                    {item.name} <a onClick={() => handleOpenBudgetCategoryModal(item)} className={'float-end text-white'}><PencilSquare/></a>
+                                                <ListGroup.Item className={'mb-2'} onClick={() => getBudgetList(item)}
+                                                                action href={`#${item.name}`}>
+                                                    {item.name} <a onClick={() => handleOpenBudgetCategoryModal(item)}
+                                                                   className={'float-end text-white'}><PencilSquare/></a>
                                                 </ListGroup.Item>
                                             </ListGroup>
                                         </Col>
@@ -139,13 +143,16 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                                                         ?
                                                         budgets.map(budget => {
                                                             return (
-                                                                <Card onClick={() => handleSetBudget(budget)} className={'mb-2 card-toselect'} body>{budget.name}</Card>
+                                                                <Card onClick={() => handleSetBudget(budget)}
+                                                                      className={'mb-2 card-toselect'}
+                                                                      body>{budget.name}</Card>
                                                             )
                                                         })
                                                         :
-                                                        <Spinner animation="grow" />
+                                                        <Spinner animation="grow"/>
                                                     }
-                                                    <Button variant={'link'} onClick={handleOpenCreateBudgetModal} body>add new budget</Button>
+                                                    <Button variant={'link'} onClick={handleOpenCreateBudgetModal} body>add
+                                                        new budget</Button>
                                                 </Tab.Pane>
                                             </Tab.Content>
                                         </Col>
@@ -156,9 +163,12 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                     </Tab.Container>
                 </Card.Text>
             </Card.Body>
-            <EditBudgetCategoryModal refreshData={refreshData} budgetCategory={selectedBudgetCategory} show={budgetCategoryModalShow} handleClose={handleCloseBudgetCategoryModal}/>
-            <CreateBudgetCategoryModal refreshData={refreshData} handleClose={handleCloseCreateBudgetCategoryModal} show={createBudgetCategoryModalShow}/>
-            <CreateBudgetModal refreshData={refreshData} budgetCategory={selectedBudgetCategory} show={createBudgetModalShow} handleClose={handleCloseCreateBudgetModal}/>
+            <EditBudgetCategoryModal refreshData={refreshData} budgetCategory={selectedBudgetCategory}
+                                     show={budgetCategoryModalShow} handleClose={handleCloseBudgetCategoryModal}/>
+            <CreateBudgetCategoryModal refreshData={refreshData} handleClose={handleCloseCreateBudgetCategoryModal}
+                                       show={createBudgetCategoryModalShow}/>
+            <CreateBudgetModal refreshData={refreshData} budgetCategory={selectedBudgetCategory}
+                               show={createBudgetModalShow} handleClose={handleCloseCreateBudgetModal}/>
         </Card>
     )
 }
@@ -198,12 +208,13 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
                 <Card.Text>
                     <Tab.Container id="list-group-tabs-example">
                         <Row>
-                            {budgetCategories.map(item => {
+                            {budgetCategories.length > 0 && budgetCategories.map(item => {
                                 return (
                                     <>
                                         <Col sm={4}>
                                             <ListGroup>
-                                                <ListGroup.Item onClick={() => getBudgetList(item.id)} action href={`#${item.name}`}>
+                                                <ListGroup.Item onClick={() => getBudgetList(item.id)} action
+                                                                href={`#${item.name}`}>
                                                     {item.name}
                                                 </ListGroup.Item>
                                             </ListGroup>
@@ -215,11 +226,13 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
                                                         ?
                                                         budgets.map(budget => {
                                                             return (
-                                                                <Card onClick={() => handleSetBudget(budget)} className={'mb-2 card-toselect'} body>{budget.name}</Card>
+                                                                <Card onClick={() => handleSetBudget(budget)}
+                                                                      className={'mb-2 card-toselect'}
+                                                                      body>{budget.name}</Card>
                                                             )
                                                         })
                                                         :
-                                                        <Spinner animation="grow" />
+                                                        <Spinner animation="grow"/>
                                                     }
                                                 </Tab.Pane>
                                             </Tab.Content>
@@ -235,7 +248,17 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
     )
 }
 
-export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
+export const BudgetSingleComponent = ({
+                                          budget,
+                                          setBudget,
+                                          sharedStatus,
+                                          startExpenseDate,
+                                          endExpenseDate,
+                                          endIncomeDate,
+                                          startIncomeDate,
+                                          filterByDate,
+                                          filterByAmount
+                                      }) => {
     const [expenses, setExpenses] = useState(null)
     const [incomes, setIncomes] = useState(null)
     const [incomesSum, setIncomesSum] = useState(0)
@@ -276,20 +299,24 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
     useEffect(() => {
         if (budget) {
             if (budget.expenses) {
-                let result = budget.expenses_detail.reduce(function (r, a) {
-                    r[a.category_detail.id] = r[a.category_detail.id] || [];
-                    r[a.category_detail.id].push(a);
-                    return r;
-                }, Object.create(null));
-                setExpenses(result);
+                if (budget.expenses_detail.length > 0) {
+                    let result = budget.expenses_detail.reduce(function (r, a) {
+                        r[a.category_detail.id] = r[a.category_detail.id] || [];
+                        r[a.category_detail.id].push(a);
+                        return r;
+                    }, Object.create(null));
+                    setExpenses(result);
+                } else setExpenses([])
             }
             if (budget.income) {
-                let result = budget.income_detail.reduce(function (r, a) {
-                    r[a.category_detail.id] = r[a.category_detail.id] || [];
-                    r[a.category_detail.id].push(a);
-                    return r;
-                }, Object.create(null));
-                setIncomes(result);
+                if (budget.income_detail.length > 0) {
+                    let result = budget.income_detail.reduce(function (r, a) {
+                        r[a.category_detail.id] = r[a.category_detail.id] || [];
+                        r[a.category_detail.id].push(a);
+                        return r;
+                    }, Object.create(null));
+                    setIncomes(result);
+                } else setIncomes([])
             }
 
             const sumIncomesExpenses = () => {
@@ -314,8 +341,24 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
     const deleteBudget = () => {
         if (window.confirm('Are you sure you want to delete this budget?')) {
             apiHandler.deleteData(`budget/${budget.id}`).then(resp => {
-                alert('successfully deleted')
             })
+            refreshData()
+        } else {
+            console.log('Budget was not deleted.');
+        }
+    }
+
+    const deleteBudgetItem = (item_id, type) => {
+        if (window.confirm('Are you sure you want to delete this budget?')) {
+            if (type === 'income') {
+                apiHandler.deleteData(`income/${item_id}`).then(resp => {
+                })
+            }
+            if (type === 'expense') {
+                apiHandler.deleteData(`expense/${item_id}`).then(resp => {
+                })
+            }
+            refreshData()
         } else {
             console.log('Budget was not deleted.');
         }
@@ -333,7 +376,8 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
                                         {budget.name}
                                     </Col>
                                     <Col md={8}>
-                                        <IncomeExpenseSumComponent expensesSum={expensesSum} incomesSum={incomesSum} incomesExpensesSumResult={incomesExpensesSumResult}/>
+                                        <IncomeExpenseSumComponent expensesSum={expensesSum} incomesSum={incomesSum}
+                                                                   incomesExpensesSumResult={incomesExpensesSumResult}/>
                                     </Col>
                                 </Row>
                             </Col>
@@ -349,69 +393,147 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
                         <Row>
                             <Col>
                                 <Row className={'mb-2'}>
-                                    <Col>
-                                        <Card.Title>Incomes</Card.Title>
+                                    <Col md={4}>
+                                        <h2>Incomes</h2>
                                     </Col>
                                     {!sharedStatus &&
-                                    <Col className={'text-end'}>
-                                        <Button onClick={handleOpenCreateIncomeCategoryModal} size={'sm'}>Add income category</Button>{' '}
+                                    <Col md={8} className={'text-end'}>
+                                        <Button onClick={handleOpenCreateIncomeCategoryModal} size={'sm'}>Add income
+                                            category</Button>{' '}
                                         <Button onClick={handleOpenCreateIncomeModal} size={'sm'}>Add income</Button>
                                     </Col>
                                     }
                                 </Row>
-                                {
-                                    incomes && Object.values(incomes).map(itemArr => {
-                                        return (
-                                            <div>
-                                                <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus && <PencilSquare className={'clickable-icon'} onClick={() => handleOpenEditIncomeCategoryModal(itemArr[0].category_detail)}/>}</p>
-                                                {
-                                                    itemArr.map(item => {
-                                                        return (
-                                                            <Card className={'mb-2 card-toselect'} body>
-                                                                <Row>
-                                                                    <Col>
-                                                                        {item.name}
-                                                                    </Col>
-                                                                    <Col className={'text-end'}>
-                                                                        {item.amount} $
-                                                                    </Col>
-                                                                </Row>
-                                                            </Card>
-                                                        )
-                                                    })
-                                                }
-                                            </div>
-                                        )
-                                    })
-                                }
+                                <Row>
+                                    <Col>
+                                        <hr/>
+                                        <div>
+                                            <Card.Title>Filters</Card.Title>
+                                            <Row>
+                                                <Col>
+                                                    from date
+                                                    <DatePicker selected={startIncomeDate}
+                                                                onChange={(date) => filterByDate(date, 'start', 'incomes')}/>
+                                                </Col>
+                                                <Col>
+                                                    to date
+                                                    <DatePicker selected={endIncomeDate}
+                                                                onChange={(date) => filterByDate(date, 'end', 'incomes')}/>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col>
+                                                    from amount
+                                                    <Form.Control onChange={(e) => filterByAmount(e.target.value, 'start', 'incomes')} type="text" placeholder="Amount from"/>
+                                                </Col>
+                                                <Col>
+                                                    to amount
+                                                    <Form.Control onChange={(e) => filterByAmount(e.target.value, 'end', 'incomes')} type="text" placeholder="Amount to"/>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                        <hr/>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        {
+                                            incomes && Object.values(incomes).map(itemArr => {
+                                                return (
+                                                    <div>
+                                                        <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus &&
+                                                        <PencilSquare className={'clickable-icon'}
+                                                                      onClick={() => handleOpenEditIncomeCategoryModal(itemArr[0].category_detail)}/>}</p>
+                                                        {
+                                                            itemArr.map(item => {
+                                                                return (
+                                                                    <Card className={'mb-2 card-toselect'} body>
+                                                                        <Row>
+                                                                            <Col className={'align-self-center'}>
+                                                                                {item.name}
+                                                                            </Col>
+                                                                            <Col className={'align-self-center'}>
+                                                                                {item.date}
+                                                                            </Col>
+                                                                            <Col className={'text-end align-self-center'}>
+                                                                                {item.amount} $ {!sharedStatus && <Button onClick={() => deleteBudgetItem(item.id, 'income')} size={'sm'} variant={"danger"}><XCircleFill/></Button>}
+                                                                            </Col>
+                                                                        </Row>
+                                                                    </Card>
+                                                                )
+                                                            })
+                                                        }
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </Col>
+                                </Row>
                             </Col>
                             <Col>
                                 <Row className={'mb-2'}>
-                                    <Col>
-                                        <Card.Title>Expenses</Card.Title>
+                                    <Col md={4}>
+                                        <h2>Expenses</h2>
                                     </Col>
                                     {!sharedStatus &&
-                                    <Col className={'text-end'}>
-                                        <Button onClick={handleOpenCreateExpenseCategoryModal} size={'sm'}>Add expense category</Button>{' '}
+                                    <Col md={8} className={'text-end'}>
+                                        <Button onClick={handleOpenCreateExpenseCategoryModal} size={'sm'}>Add expense
+                                            category</Button>{' '}
                                         <Button onClick={handleOpenCreateExpenseModal} size={'sm'}>Add expense</Button>
                                     </Col>
                                     }
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <hr/>
+                                        <div>
+                                            <Card.Title>Filters</Card.Title>
+                                            <Row>
+                                                <Col>
+                                                    from date
+                                                    <DatePicker selected={startExpenseDate}
+                                                                onChange={(date) => filterByDate(date, 'start', 'expense')}/>
+                                                </Col>
+                                                <Col>
+                                                    to date
+                                                    <DatePicker selected={endExpenseDate}
+                                                                onChange={(date) => filterByDate(date, 'end', 'expense')}/>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col>
+                                                    from amount
+                                                    <Form.Control onChange={(e) => filterByAmount(e.target.value, 'start', 'expense')} type="text" placeholder="Amount from"/>
+                                                </Col>
+                                                <Col>
+                                                    to amount
+                                                    <Form.Control onChange={(e) => filterByAmount(e.target.value, 'end', 'expense')} type="text" placeholder="Normal text"/>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                        <hr/>
+                                    </Col>
                                 </Row>
                                 {
                                     expenses && Object.values(expenses).map(itemArr => {
                                         return (
                                             <div>
-                                                <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus && <PencilSquare className={'clickable-icon'} onClick={() => handleOpenEditExpenseCategoryModal(itemArr[0].category_detail)}/>}</p>
+                                                <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus &&
+                                                <PencilSquare className={'clickable-icon'}
+                                                              onClick={() => handleOpenEditExpenseCategoryModal(itemArr[0].category_detail)}/>}</p>
                                                 {
                                                     itemArr.map(item => {
                                                         return (
                                                             <Card className={'mb-2 card-toselect'} body>
                                                                 <Row>
-                                                                    <Col>
+                                                                    <Col className={'align-self-center'}>
                                                                         {item.name}
                                                                     </Col>
-                                                                    <Col className={'text-end'}>
-                                                                        {item.amount} $
+                                                                    <Col className={'align-self-center'}>
+                                                                        {item.date}
+                                                                    </Col>
+                                                                    <Col className={'text-end align-self-center'}>
+                                                                        {item.amount} $ {!sharedStatus && <Button onClick={() => deleteBudgetItem(item.id, 'expense')} size={'sm'} variant={"danger"}><XCircleFill/></Button>}
                                                                     </Col>
                                                                 </Row>
                                                             </Card>
@@ -426,12 +548,20 @@ export const BudgetSingleComponent = ({budget, setBudget, sharedStatus}) => {
                         </Row>
                     </Card.Text>
                 </Card.Body>
-                <CreateIncomeModal refreshData={refreshData} budget={budget} show={createIncomeModalShow} handleClose={handleCloseCreateIncomeModal}/>
-                <CreateExpenseModal refreshData={refreshData} budget={budget} show={createExpenseModalShow} handleClose={handleCloseCreateExpenseModal}/>
-                <CreateExpenseCategoryModal refreshData={refreshData} show={createExpenseCategoryModalShow} handleClose={handleCloseCreateExpenseCategoryModal}/>
-                <CreateIncomeCategoryModal refreshData={refreshData} show={createIncomeCategoryModalShow} handleClose={handleCloseCreateIncomeCategoryModal}/>
-                <EditExpenseCategoryModal refreshData={refreshData} show={editExpenseCategoryModalShow} handleClose={handleCloseEditExpenseCategoryModal} category={selectedIncomeExpenseCategory}/>
-                <EditIncomeCategoryModal refreshData={refreshData} show={editIncomeCategoryModalShow} handleClose={handleCloseEditIncomeCategoryModal} category={selectedIncomeExpenseCategory}/>
+                <CreateIncomeModal refreshData={refreshData} budget={budget} show={createIncomeModalShow}
+                                   handleClose={handleCloseCreateIncomeModal}/>
+                <CreateExpenseModal refreshData={refreshData} budget={budget} show={createExpenseModalShow}
+                                    handleClose={handleCloseCreateExpenseModal}/>
+                <CreateExpenseCategoryModal refreshData={refreshData} show={createExpenseCategoryModalShow}
+                                            handleClose={handleCloseCreateExpenseCategoryModal}/>
+                <CreateIncomeCategoryModal refreshData={refreshData} show={createIncomeCategoryModalShow}
+                                           handleClose={handleCloseCreateIncomeCategoryModal}/>
+                <EditExpenseCategoryModal refreshData={refreshData} show={editExpenseCategoryModalShow}
+                                          handleClose={handleCloseEditExpenseCategoryModal}
+                                          category={selectedIncomeExpenseCategory}/>
+                <EditIncomeCategoryModal refreshData={refreshData} show={editIncomeCategoryModalShow}
+                                         handleClose={handleCloseEditIncomeCategoryModal}
+                                         category={selectedIncomeExpenseCategory}/>
             </Card>
         )
     } else return null
