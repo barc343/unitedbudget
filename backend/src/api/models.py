@@ -51,5 +51,5 @@ class BudgetCategory(CoreModel):
 
 class Budget(CoreModel):
     category = models.ForeignKey(BudgetCategory, on_delete=models.CASCADE)
-    income = models.ManyToManyField(Income, blank=True)
-    expenses = models.ManyToManyField(Expense, blank=True)
+    income = models.ManyToManyField(Income, blank=True, related_name='budget_income')
+    expenses = models.ManyToManyField(Expense, blank=True, related_name='budget_expense')

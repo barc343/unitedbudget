@@ -7,7 +7,18 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
+import django_filters
 
+
+class ExpenseFilter(django_filters.FilterSet):
+    start_date = django_filters.filters.DateFilter(field_name='date', lookup_expr='gte')
+    end_date = django_filters.filters.DateFilter(field_name='date', lookup_expr='lte')
+    start_amount = django_filters.filters.NumberFilter(field_name='amount', lookup_expr='gte')
+    end_amount = django_filters.filters.NumberFilter(field_name='amount', lookup_expr='lte')
+
+    class Meta:
+        model = Expense
+        fields = ['start_date', 'end_date', 'start_amount', 'end_amount']
 
 class ExpensesViewSet(viewsets.ModelViewSet):
     """
@@ -15,6 +26,14 @@ class ExpensesViewSet(viewsets.ModelViewSet):
     """
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
+    filter_class = ExpenseFilter
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.request.query_params.get('budget_id'):
+            res = queryset.filter(budget_expense=self.request.query_params.get('budget_id'))
+            return res
+        return queryset
 
 
 class ExpenseCategoriesViewSet(viewsets.ModelViewSet):
@@ -25,12 +44,31 @@ class ExpenseCategoriesViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseCategorySerializer
 
 
+class IncomeFilter(django_filters.FilterSet):
+    start_date = django_filters.filters.DateFilter(field_name='date', lookup_expr='gte')
+    end_date = django_filters.filters.DateFilter(field_name='date', lookup_expr='lte')
+    start_amount = django_filters.filters.NumberFilter(field_name='amount', lookup_expr='gte')
+    end_amount = django_filters.filters.NumberFilter(field_name='amount', lookup_expr='lte')
+
+    class Meta:
+        model = Income
+        fields = ['start_date', 'end_date', 'start_amount', 'end_amount']
+
+
 class IncomesViewSet(viewsets.ModelViewSet):
     """
     Budget ViewSet.
     """
     queryset = Income.objects.all()
     serializer_class = IncomeSerializer
+    filter_class = IncomeFilter
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.request.query_params.get('budget_id'):
+            res = queryset.filter(budget_income=self.request.query_params.get('budget_id'))
+            return res
+        return queryset
 
 
 class IncomeCategoriesViewSet(viewsets.ModelViewSet):
