@@ -10,9 +10,10 @@ class RequestHandler {
         if (sessionStorage.getItem('token') && JSON.parse(sessionStorage.getItem('token')).hasOwnProperty('access')) {
             this.refresh_token().then(resp =>{
                 if (resp.hasOwnProperty('access')) {
-                    let old_token = JSON.parse(sessionStorage.getItem('token'))
-                    old_token.access = resp.access
-                    sessionStorage.setItem('token', JSON.stringify(old_token))
+                    let new_token = JSON.parse(sessionStorage.getItem('token'))
+                    new_token.access = resp.access
+                    sessionStorage.setItem('token', JSON.stringify(new_token))
+                    this.accessToken = 'Bearer ' + resp.access
                 } else {
                     sessionStorage.removeItem('token')
                 }
@@ -36,7 +37,7 @@ class RequestHandler {
     }
 
     async registerUser(registerData = {}) {
-        const response = await fetch(this.host + 'register/', {
+        const response = await fetch(this.host + 'user/', {
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
                 'Content-Type': 'application/json'

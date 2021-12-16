@@ -66,6 +66,7 @@ const LoginComponent = ({setRegister, setToken}) => {
             if (resp.hasOwnProperty('access')) {
                 sessionStorage.setItem('token', JSON.stringify(resp))
                 setToken(resp)
+                window.location.reload()
             } else alert('Incorrect login data')
             // window.location.reload()
         })

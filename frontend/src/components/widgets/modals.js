@@ -301,7 +301,7 @@ export const CreateExpenseModal = ({show, handleClose, budget, refreshData}) => 
                         <FloatingLabel controlId="floatingSelect" label="Select income category">
                             <Form.Select onChange={(e) => setSelectedCategory(e.target.value)}>
                                 <option value={null}>---</option>
-                                {expenseCategories.map(item => {
+                                {expenseCategories.length > 0 && expenseCategories.map(item => {
                                     return (
                                         <option value={item.id}>{item.name}</option>
                                     )

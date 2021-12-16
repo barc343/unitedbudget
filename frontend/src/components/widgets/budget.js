@@ -10,6 +10,7 @@ import {
     CreateIncomeModal,
     EditBudgetCategoryModal, EditExpenseCategoryModal, EditIncomeCategoryModal
 } from "./modals";
+import {PaginationComponent} from "./pagination";
 
 
 const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumResult}) => {
@@ -84,10 +85,12 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
     }, [])
 
     const getBudgetList = (category) => {
-        apiHandler.getData(`budget/?category=${category.id}`).then(resp => {
-            setBudgets(resp)
-            setSelectedBudgetCategory(category)
-        })
+        if (category && category.hasOwnProperty('id')) {
+            apiHandler.getData(`budget/?category=${category.id}`).then(resp => {
+                setBudgets(resp)
+                setSelectedBudgetCategory(category)
+            })
+        }
     }
 
     const refreshData = () => {
@@ -296,20 +299,24 @@ export const BudgetSingleComponent = ({
     useEffect(() => {
         if (budget) {
             if (budget.expenses) {
-                let result = budget.expenses_detail.reduce(function (r, a) {
-                    r[a.category_detail.id] = r[a.category_detail.id] || [];
-                    r[a.category_detail.id].push(a);
-                    return r;
-                }, Object.create(null));
-                setExpenses(result);
+                if (budget.expenses_detail.length > 0) {
+                    let result = budget.expenses_detail.reduce(function (r, a) {
+                        r[a.category_detail.id] = r[a.category_detail.id] || [];
+                        r[a.category_detail.id].push(a);
+                        return r;
+                    }, Object.create(null));
+                    setExpenses(result);
+                } else setExpenses([])
             }
             if (budget.income) {
-                let result = budget.income_detail.reduce(function (r, a) {
-                    r[a.category_detail.id] = r[a.category_detail.id] || [];
-                    r[a.category_detail.id].push(a);
-                    return r;
-                }, Object.create(null));
-                setIncomes(result);
+                if (budget.income_detail.length > 0) {
+                    let result = budget.income_detail.reduce(function (r, a) {
+                        r[a.category_detail.id] = r[a.category_detail.id] || [];
+                        r[a.category_detail.id].push(a);
+                        return r;
+                    }, Object.create(null));
+                    setIncomes(result);
+                } else setIncomes([])
             }
 
             const sumIncomesExpenses = () => {
@@ -387,7 +394,7 @@ export const BudgetSingleComponent = ({
                             <Col>
                                 <Row className={'mb-2'}>
                                     <Col md={4}>
-                                        <Card.Title>Incomes</Card.Title>
+                                        <h2>Incomes</h2>
                                     </Col>
                                     {!sharedStatus &&
                                     <Col md={8} className={'text-end'}>
@@ -445,6 +452,9 @@ export const BudgetSingleComponent = ({
                                                                             <Col className={'align-self-center'}>
                                                                                 {item.name}
                                                                             </Col>
+                                                                            <Col className={'align-self-center'}>
+                                                                                {item.date}
+                                                                            </Col>
                                                                             <Col className={'text-end align-self-center'}>
                                                                                 {item.amount} $ {!sharedStatus && <Button onClick={() => deleteBudgetItem(item.id, 'income')} size={'sm'} variant={"danger"}><XCircleFill/></Button>}
                                                                             </Col>
@@ -463,7 +473,7 @@ export const BudgetSingleComponent = ({
                             <Col>
                                 <Row className={'mb-2'}>
                                     <Col md={4}>
-                                        <Card.Title>Expenses</Card.Title>
+                                        <h2>Expenses</h2>
                                     </Col>
                                     {!sharedStatus &&
                                     <Col md={8} className={'text-end'}>
@@ -518,6 +528,9 @@ export const BudgetSingleComponent = ({
                                                                 <Row>
                                                                     <Col className={'align-self-center'}>
                                                                         {item.name}
+                                                                    </Col>
+                                                                    <Col className={'align-self-center'}>
+                                                                        {item.date}
                                                                     </Col>
                                                                     <Col className={'text-end align-self-center'}>
                                                                         {item.amount} $ {!sharedStatus && <Button onClick={() => deleteBudgetItem(item.id, 'expense')} size={'sm'} variant={"danger"}><XCircleFill/></Button>}

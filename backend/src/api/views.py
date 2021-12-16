@@ -8,6 +8,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 import django_filters
+from rest_framework.pagination import PageNumberPagination
+
+
+class BudgetItemsPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class ExpenseFilter(django_filters.FilterSet):
@@ -27,6 +34,7 @@ class ExpensesViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
     filter_class = ExpenseFilter
+    pagination_class = BudgetItemsPagination
 
     def get_queryset(self):
         queryset = self.queryset
@@ -62,6 +70,7 @@ class IncomesViewSet(viewsets.ModelViewSet):
     queryset = Income.objects.all()
     serializer_class = IncomeSerializer
     filter_class = IncomeFilter
+    pagination_class = BudgetItemsPagination
 
     def get_queryset(self):
         queryset = self.queryset
