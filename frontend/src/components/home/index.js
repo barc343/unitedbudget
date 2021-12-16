@@ -1,9 +1,9 @@
-import {Card, Col, Container, Row} from "react-bootstrap";
+import {Col, Container, Row} from "react-bootstrap";
 import {BudgetCategories, BudgetSingleComponent, ShareBudgetCategories} from "../widgets/budget";
 import {useState} from "react";
 import {apiHandler} from "../../modules/requests";
 import {formatDate} from "../../modules/utils";
-import {PaginationComponent, PaginationExpensesComponent, PaginationIncomesComponent} from "../widgets/pagination";
+import {PaginationExpensesComponent, PaginationIncomesComponent} from "../widgets/pagination";
 
 export const HomeComponent = () => {
     const [budget, setBudget] = useState(null)
@@ -219,7 +219,7 @@ export const HomeComponent = () => {
                 </Row>
                 <Row className={'mb-3'}>
                     <Col>
-                        <PaginationIncomesComponent incomesPage={incomesPage} handleIncomePage={handleExpensePage}
+                        <PaginationIncomesComponent incomesPage={incomesPage} handleIncomePage={handleIncomePage}
                                                     incomesNext={incomesNext} incomesBack={incomesBack}/>
                     </Col>
                     <Col>

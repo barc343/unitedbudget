@@ -13,7 +13,7 @@ const CheckboxElem = ({option, defaultChecked, handleChange, empty, label}) => {
         if (defaultChecked) {
             setChecked(defaultChecked)
         }
-    }, [])
+    }, [defaultChecked])
 
     useEffect(() => {
         empty && setChecked(false);

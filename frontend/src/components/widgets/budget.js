@@ -4,13 +4,11 @@ import {Tab, Row, Col, ListGroup, Spinner, Button, Card, Badge, Form} from "reac
 import {PencilSquare, XCircle, XCircleFill} from 'react-bootstrap-icons';
 import DatePicker from "react-datepicker";
 import {
-    BudgetCategoryModal,
     CreateBudgetCategoryModal,
     CreateBudgetModal, CreateExpenseCategoryModal, CreateExpenseModal, CreateIncomeCategoryModal,
     CreateIncomeModal,
     EditBudgetCategoryModal, EditExpenseCategoryModal, EditIncomeCategoryModal
 } from "./modals";
-import {PaginationComponent} from "./pagination";
 
 
 const IncomeExpenseSumComponent = ({incomesSum, expensesSum, incomesExpensesSumResult}) => {
@@ -123,16 +121,14 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                 </Row>
                 <Card.Text>
                     <Tab.Container id="list-group-tabs-example">
-                        <Row>
                             {budgetCategories.length > 0 && budgetCategories.map(item => {
                                 return (
-                                    <>
+                                    <Row key={item.id}>
                                         <Col sm={4}>
                                             <ListGroup>
                                                 <ListGroup.Item className={'mb-2'} onClick={() => getBudgetList(item)}
                                                                 action href={`#${item.name}`}>
-                                                    {item.name} <a onClick={() => handleOpenBudgetCategoryModal(item)}
-                                                                   className={'float-end text-white'}><PencilSquare/></a>
+                                                    {item.name} <PencilSquare className={'float-end mt-1'} color={'black'} onClick={() => handleOpenBudgetCategoryModal(item)}/>
                                                 </ListGroup.Item>
                                             </ListGroup>
                                         </Col>
@@ -143,7 +139,7 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                                                         ?
                                                         budgets.map(budget => {
                                                             return (
-                                                                <Card onClick={() => handleSetBudget(budget)}
+                                                                <Card key={budget.id} onClick={() => handleSetBudget(budget)}
                                                                       className={'mb-2 card-toselect'}
                                                                       body>{budget.name}</Card>
                                                             )
@@ -156,10 +152,9 @@ export const BudgetCategories = ({setBudget, setSharedStatus}) => {
                                                 </Tab.Pane>
                                             </Tab.Content>
                                         </Col>
-                                    </>
+                                    </Row>
                                 )
                             })}
-                        </Row>
                     </Tab.Container>
                 </Card.Text>
             </Card.Body>
@@ -207,10 +202,9 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
                 </Row>
                 <Card.Text>
                     <Tab.Container id="list-group-tabs-example">
-                        <Row>
                             {budgetCategories.length > 0 && budgetCategories.map(item => {
                                 return (
-                                    <>
+                                    <Row key={item.id}>
                                         <Col sm={4}>
                                             <ListGroup>
                                                 <ListGroup.Item onClick={() => getBudgetList(item.id)} action
@@ -226,7 +220,7 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
                                                         ?
                                                         budgets.map(budget => {
                                                             return (
-                                                                <Card onClick={() => handleSetBudget(budget)}
+                                                                <Card key={budget.id} onClick={() => handleSetBudget(budget)}
                                                                       className={'mb-2 card-toselect'}
                                                                       body>{budget.name}</Card>
                                                             )
@@ -237,10 +231,9 @@ export const ShareBudgetCategories = ({setBudget, setSharedStatus}) => {
                                                 </Tab.Pane>
                                             </Tab.Content>
                                         </Col>
-                                    </>
+                                    </Row>
                                 )
                             })}
-                        </Row>
                     </Tab.Container>
                 </Card.Text>
             </Card.Body>
@@ -438,16 +431,16 @@ export const BudgetSingleComponent = ({
                                 <Row>
                                     <Col>
                                         {
-                                            incomes && Object.values(incomes).map(itemArr => {
+                                            incomes && Object.values(incomes).map((itemArr, index) => {
                                                 return (
-                                                    <div>
-                                                        <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus &&
+                                                    <div key={index}>
+                                                        <span className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus &&
                                                         <PencilSquare className={'clickable-icon'}
-                                                                      onClick={() => handleOpenEditIncomeCategoryModal(itemArr[0].category_detail)}/>}</p>
+                                                                      onClick={() => handleOpenEditIncomeCategoryModal(itemArr[0].category_detail)}/>}</span>
                                                         {
                                                             itemArr.map(item => {
                                                                 return (
-                                                                    <Card className={'mb-2 card-toselect'} body>
+                                                                    <Card key={item.id} className={'mb-2 card-toselect'} body>
                                                                         <Row>
                                                                             <Col className={'align-self-center'}>
                                                                                 {item.name}
@@ -515,16 +508,16 @@ export const BudgetSingleComponent = ({
                                     </Col>
                                 </Row>
                                 {
-                                    expenses && Object.values(expenses).map(itemArr => {
+                                    expenses && Object.values(expenses).map((itemArr, index) => {
                                         return (
-                                            <div>
-                                                <p className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus &&
+                                            <div key={index}>
+                                                <span className={'h6'}>{itemArr[0].category_detail.name} {!sharedStatus &&
                                                 <PencilSquare className={'clickable-icon'}
-                                                              onClick={() => handleOpenEditExpenseCategoryModal(itemArr[0].category_detail)}/>}</p>
+                                                              onClick={() => handleOpenEditExpenseCategoryModal(itemArr[0].category_detail)}/>}</span>
                                                 {
                                                     itemArr.map(item => {
                                                         return (
-                                                            <Card className={'mb-2 card-toselect'} body>
+                                                            <Card key={item.id} className={'mb-2 card-toselect'} body>
                                                                 <Row>
                                                                     <Col className={'align-self-center'}>
                                                                         {item.name}
