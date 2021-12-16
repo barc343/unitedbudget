@@ -6,7 +6,7 @@ App for multi user budget management
 ### Docker
 If you want run app, you must have installed Docker and Docker-compose
 ### Backend
-Go to `/backend` folder and run `docker-compose build` - this command build the container and install required dependences
+Go to `/backend` folder and run `docker-compose build` - this command build the container and install required dependencies
 
 ##### After install:
 Go to `/backend` folder and run `docker-compose run -d` - this command run container with installed app
@@ -34,4 +34,27 @@ Next step is for run Docker Container
 `docker run -p 80:80 --name ub-front-app unitedbudget-frontend-prod`
 This command run react build app in container with nginx and serve app in port 80
 now frontend is avaliable on url `localhost`
+> if you quit the container you have to delete the created container to restart it
+`docker rm ub-front-app`
 
+***
+#### demo users:
+login: mark
+password: demo
+
+login: anna
+password: demo1234
+
+login: john
+password: demo1234
+
+***
+#### tests:
+simple tests are implemented in backend (testing api)
+if you will run test after run backend container step into it and run `pytest` command
+
+
+***
+TODO:
+- Pagination works only if  element count is greater than 10 and if any filter is enabled
+- Filtering not works well together

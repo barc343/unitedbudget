@@ -82,10 +82,7 @@ const LoginComponent = ({setRegister, setToken}) => {
                         <Form onSubmit={(e) => loginUser(e)}>
                             <Form.Group className="mb-3" controlId="formBasicEmail">
                                 <Form.Label>Username</Form.Label>
-                                <Form.Control onChange={(e) => setLogin(e.target.value)} type="text" placeholder="Enter email" />
-                                <Form.Text className="text-muted">
-                                    We'll never share your email with anyone else.
-                                </Form.Text>
+                                <Form.Control onChange={(e) => setLogin(e.target.value)} type="text" placeholder="Enter username" />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="formBasicPassword">
