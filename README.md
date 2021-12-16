@@ -1,4 +1,5 @@
 
+
 # unitedbudget
 App for multi user budget management
 
@@ -18,6 +19,7 @@ type command `docker exec -it unitedbudget_api bash`
 
 now you are in `/code` directory - run migrations by command `python manage.py migrate`
 after this step go to `/code/fixtures` and run script `./load_data.sh`
+> if errors exist rerun script to no error situation
 after this step data will be in database
 
 
@@ -51,7 +53,7 @@ password: demo1234
 ***
 #### tests:
 simple tests are implemented in backend (testing api)
-if you will run test after run backend container step into it and run `pytest` command
+if you will run test, after run backend container step into `/code` and run `pytest` command
 
 
 ***

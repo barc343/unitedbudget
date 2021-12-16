@@ -9,4 +9,5 @@ python ../manage.py loaddata expense.json
 python ../manage.py loaddata income.json
 
 
+
 echo 'LOAD_DATA END'
