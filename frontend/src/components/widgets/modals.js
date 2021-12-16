@@ -331,6 +331,7 @@ export const CreateExpenseCategoryModal = ({show, handleClose, refreshData}) => 
         let data = getDataFromFormRef(form)
         apiHandler.postData(`expense_categories/`, data).then(resp => {
             refreshData()
+            handleClose()
         })
     }
 

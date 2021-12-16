@@ -13,3 +13,6 @@ db/
 
 # customs
 .idea/
+
+#pytest
+.pytest_cache/
