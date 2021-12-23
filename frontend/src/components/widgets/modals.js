@@ -117,8 +117,6 @@ export const CreateBudgetCategoryModal = ({show, handleClose, refreshData}) => {
 
 export const CreateBudgetModal = ({show, handleClose, budgetCategory, refreshData}) => {
     const form = useRef(null)
-    const [expenses, setExpenses] = useState([])
-    const [incomes, setIncomes] = useState([])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -220,7 +218,7 @@ export const CreateIncomeModal = ({show, handleClose, budget, refreshData}) => {
                                 <option value={null}>---</option>
                                 {incomeCategories.length > 0 && incomeCategories.map(item => {
                                     return (
-                                        <option value={item.id}>{item.name}</option>
+                                        <option key={item.id} value={item.id}>{item.name}</option>
                                     )
                                 })}
                             </Form.Select>
@@ -303,7 +301,7 @@ export const CreateExpenseModal = ({show, handleClose, budget, refreshData}) => 
                                 <option value={null}>---</option>
                                 {expenseCategories.length > 0 && expenseCategories.map(item => {
                                     return (
-                                        <option value={item.id}>{item.name}</option>
+                                        <option key={item.id} value={item.id}>{item.name}</option>
                                     )
                                 })}
                             </Form.Select>

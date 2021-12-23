@@ -1,5 +1,5 @@
 import {Button, Card, Container, Form} from "react-bootstrap";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {apiHandler} from "../../modules/requests";
 
 const RegisterComponent = ({setRegister}) => {

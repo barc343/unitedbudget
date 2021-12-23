@@ -1,6 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
-import {Routes, Route, Link} from "react-router-dom";
+import {Routes, Route} from "react-router-dom";
 import {HomeComponent} from "./components/home";
 import {useState} from "react";
 import {HeaderComponent} from "./components/core/header";
